@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery - INNOVATIVE Car Dealership</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: black;
+        }
+
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+            margin-top: 2rem;
+        }
+
+        .gallery-item {
+            height: 250px;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--light-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            transition: var(--transition-main);
+            position: relative;
+            overflow: hidden;
+            font-weight: 600;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .gallery-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);
+            z-index: 1;
+        }
+
+        .gallery-item span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 50px 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 90%;
+            max-width: 1100px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            padding: 2.5rem;
+            transform: translateY(20px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        .modal-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--gradient-primary);
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.2rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            margin: 0;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            position: relative;
+            padding-left: 1rem;
+        }
+
+        .modal-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 4px;
+            height: 70%;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+
+        .close-modal {
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: var(--gray-color);
+            cursor: pointer;
+            transition: var(--transition-main);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            color: var(--accent-color);
+            transform: rotate(90deg);
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .modal-body {
+            margin-bottom: 2rem;
+        }
+
+        .modal-description {
+            font-size: 1.1rem;
+            color: var(--gray-color);
+            max-width: 800px;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.8rem;
+            margin-top: 2rem;
+        }
+
+        .modal-item {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition-main);
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            height: 100%;
+            transform: translateY(0);
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .modal-item:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            border-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .modal-item-image-container {
+            height: 160px;
+            position: relative;
+            overflow: hidden;
+            background-color: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-item img.main-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .modal-item:hover img.main-image {
+            transform: scale(1.05);
+        }
+
+        /* Add loading indicator */
+        .modal-item-image-container::before {
+            content: 'Loading...';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--gray-color);
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-item-image-container.loading::before {
+            opacity: 1;
+        }
+
+        .modal-item-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 0.8rem;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-item:hover .modal-item-caption {
+            transform: translateY(-5px);
+        }
+
+        .modal-item-details {
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.7rem;
+            flex: 1;
+            background: linear-gradient(to bottom, #ffffff 0%, #f8f9fa 100%);
+        }
+
+        .modal-item-details p {
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--gray-color);
+        }
+
+        .modal-item-details p:first-child {
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .modal-item-details p strong {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .modal-item-thumbnails {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-top: 0.8rem;
+        }
+
+        .thumbnail {
+            width: 50px;
+            height: 35px;
+            border-radius: 4px;
+            object-fit: cover;
+            cursor: pointer;
+            transition: var(--transition-main);
+            border: 2px solid transparent;
+            background-color: #f5f5f5;
+            display: block;
+            opacity: 0.8;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .thumbnail:hover {
+            transform: translateY(-3px) scale(1.1);
+            border-color: var(--primary-color);
+            opacity: 1;
+        }
+
+        .thumbnail:first-child {
+            border-color: var(--primary-color);
+            opacity: 1;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            margin-top: 1rem;
+        }
+
+        .modal-btn {
+            padding: 0.9rem 2rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition-main);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .modal-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            transition: all 0.6s ease;
+            z-index: -1;
+        }
+
+        .modal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-btn:hover::before {
+            left: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .gallery-container {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .gallery-item {
+                height: 200px;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+
+            .modal-title {
+                font-size: 1.6rem;
+            }
+
+            .modal-description {
+                font-size: 1rem;
+            }
+
+            .modal-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+                gap: 1.2rem;
+            }
+
+            .modal-item-image-container {
+                height: 140px;
+            }
+
+            .modal-item-details {
+                padding: 1rem;
+            }
+
+            .modal-item-details p {
+                font-size: 0.85rem;
+            }
+
+            .thumbnail {
+                width: 45px;
+                height: 30px;
+            }
+
+            .modal-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .modal-content {
+                padding: 1.2rem;
+            }
+
+            .modal-title {
+                font-size: 1.4rem;
+                padding-left: 0.8rem;
+            }
+
+            .modal-gallery {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+                gap: 1rem;
+            }
+
+            .modal-item-image-container {
+                height: 120px;
+            }
+
+            .modal-item-details {
+                padding: 0.8rem;
+                gap: 0.5rem;
+            }
+
+            .thumbnail {
+                width: 40px;
+                height: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <a href="index.html" style="text-decoration: none;"><div class="logo">INNOVATIVE</div></a>
+        </div>
+        <nav>
+            <table style="width: 100%; border: none;" cellpadding="10">
+                <tr>
+                    <td style="text-align: center; padding: 10px;">
+                        <a href="index.html" style="color: white;" target="_blank">HOME</a>
+                    </td>
+                    <td style="text-align: center; padding: 10px;">
+                        <a href="contact.html" style="color: white;" target="_blank">CONTACT</a>
+                    </td>
+                </tr>
+            </table>
+        </nav>
+    </header>
+
+    <div class="main-content">
+        <h1>Our Vehicle Gallery</h1>
+        <p>Explore our premium selection of luxury and performance vehicles.</p>
+
+        <div class="gallery-container">
+            <div class="gallery-item" data-category="luxury" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('pictures/luxury-sedan-1.jpg') center/cover no-repeat; background-color: var(--primary-color);">
+                <span>Luxury Sedan</span>
+            </div>
+            <div class="gallery-item" data-category="sports" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('pictures/sports-coupe-1.jpg') center/cover no-repeat; background-color: var(--secondary-color);">
+                <span>Sports Coupe</span>
+            </div>
+            <div class="gallery-item" data-category="suv" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('pictures/premium-suv-1.jpg') center/cover no-repeat; background-color: var(--accent-color);">
+                <span>Premium SUV</span>
+            </div>
+            <div class="gallery-item" data-category="electric" style="background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('pictures/electric-vehicle-1.jpg') center/cover no-repeat; background-color: var(--success-color);">
+                <span>Electric Vehicle</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Structure -->
+    <div id="vehicleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Category Title</h2>
+                <button class="close-modal"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-description">Explore our selection of premium vehicles in this category.</p>
+                <div class="modal-gallery">
+                    <!-- Modal gallery items will be inserted here dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn">Contact Us</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <p>&copy; 2023 INNOVATIVE Car Dealership. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Modal functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('vehicleModal');
+            const modalTitle = modal.querySelector('.modal-title');
+            const modalDescription = modal.querySelector('.modal-description');
+            const modalGallery = modal.querySelector('.modal-gallery');
+            const closeBtn = modal.querySelector('.close-modal');
+            const contactBtn = modal.querySelector('.modal-btn');
+            const galleryItems = document.querySelectorAll('.gallery-item');
+
+            // Vehicle data for each category
+            const vehicleData = {
+                luxury: {
+                    title: 'Luxury Sedans',
+                    description: 'Experience unparalleled comfort and sophistication with our premium luxury sedans.',
+                    vehicles: [
+                        {
+                            name: 'Executive S-Class',
+                            image: 'pictures/luxury-sedan-1.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?mercedes',
+                            description: 'The pinnacle of luxury and technology.',
+                            price: 'Starting at R1,750,000',
+                            thumbnails: [
+                                'pictures/luxury-sedan-1-interior.jpg',
+                                'pictures/luxury-sedan-1-rear.jpg',
+                                'pictures/luxury-sedan-1-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?mercedes-interior',
+                                'https://source.unsplash.com/random/120x80/?mercedes-rear',
+                                'https://source.unsplash.com/random/120x80/?mercedes-wheel'
+                            ]
+                        },
+                        {
+                            name: 'Premium 7 Series',
+                            image: 'pictures/luxury-sedan-2.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?bmw-sedan',
+                            description: 'Combining performance and luxury in perfect harmony.',
+                            price: 'Starting at R1,600,000',
+                            thumbnails: [
+                                'pictures/luxury-sedan-2-interior.jpg',
+                                'pictures/luxury-sedan-2-rear.jpg',
+                                'pictures/luxury-sedan-2-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?bmw-interior',
+                                'https://source.unsplash.com/random/120x80/?bmw-rear',
+                                'https://source.unsplash.com/random/120x80/?bmw-wheel'
+                            ]
+                        },
+                        {
+                            name: 'Luxury A8',
+                            image: 'pictures/luxury-sedan-3.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?audi-sedan',
+                            description: 'Advanced technology with sophisticated design.',
+                            price: 'Starting at R1,590,000',
+                            thumbnails: [
+                                'pictures/luxury-sedan-3-interior.jpg',
+                                'pictures/luxury-sedan-3-rear.jpg',
+                                'pictures/luxury-sedan-3-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?audi-interior',
+                                'https://source.unsplash.com/random/120x80/?audi-rear',
+                                'https://source.unsplash.com/random/120x80/?audi-wheel'
+                            ]
+                        },
+                        {
+                            name: 'Premium XJ',
+                            image: 'pictures/luxury-sedan-4.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?jaguar',
+                            description: 'British luxury with distinctive character.',
+                            price: 'Starting at R1,510,000',
+                            thumbnails: [
+                                'pictures/luxury-sedan-4-interior.jpg',
+                                'pictures/luxury-sedan-4-rear.jpg',
+                                'pictures/luxury-sedan-4-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?jaguar-interior',
+                                'https://source.unsplash.com/random/120x80/?jaguar-rear',
+                                'https://source.unsplash.com/random/120x80/?jaguar-wheel'
+                            ]
+                        }
+                    ]
+                },
+                sports: {
+                    title: 'Sports Coupes',
+                    description: 'Feel the adrenaline with our high-performance sports cars designed for the driving enthusiast.',
+                    vehicles: [
+                        {
+                            name: 'Turbo 911',
+                            image: 'pictures/sports-coupe-1.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?porsche',
+                            description: 'Precision engineering with iconic design.',
+                            price: 'Starting at R2,100,000',
+                            thumbnails: [
+                                'pictures/sports-coupe-1-interior.jpg',
+                                'pictures/sports-coupe-1-rear.jpg',
+                                'pictures/sports-coupe-1-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?porsche-interior',
+                                'https://source.unsplash.com/random/120x80/?porsche-rear',
+                                'https://source.unsplash.com/random/120x80/?porsche-wheel'
+                            ]
+                        },
+                        {
+                            name: 'GT Supercar',
+                            image: 'pictures/sports-coupe-2.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?ferrari',
+                            description: 'Italian excellence with breathtaking performance.',
+                            price: 'Starting at R4,500,000',
+                            thumbnails: [
+                                'pictures/sports-coupe-2-interior.jpg',
+                                'pictures/sports-coupe-2-rear.jpg',
+                                'pictures/sports-coupe-2-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?ferrari-interior',
+                                'https://source.unsplash.com/random/120x80/?ferrari-rear',
+                                'https://source.unsplash.com/random/120x80/?ferrari-wheel'
+                            ]
+                        },
+                        {
+                            name: 'V12 Superleggera',
+                            image: 'pictures/sports-coupe-3.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?aston-martin',
+                            description: 'British craftsmanship with racing heritage.',
+                            price: 'Starting at R3,900,000',
+                            thumbnails: [
+                                'pictures/sports-coupe-3-interior.jpg',
+                                'pictures/sports-coupe-3-rear.jpg',
+                                'pictures/sports-coupe-3-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?aston-martin-interior',
+                                'https://source.unsplash.com/random/120x80/?aston-martin-rear',
+                                'https://source.unsplash.com/random/120x80/?aston-martin-wheel'
+                            ]
+                        },
+                        {
+                            name: 'Performance AMG',
+                            image: 'pictures/sports-coupe-4.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?mercedes-amg',
+                            description: 'German engineering with track-ready performance.',
+                            price: 'Starting at R2,300,000',
+                            thumbnails: [
+                                'pictures/sports-coupe-4-interior.jpg',
+                                'pictures/sports-coupe-4-rear.jpg',
+                                'pictures/sports-coupe-4-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?mercedes-amg-interior',
+                                'https://source.unsplash.com/random/120x80/?mercedes-amg-rear',
+                                'https://source.unsplash.com/random/120x80/?mercedes-amg-wheel'
+                            ]
+                        }
+                    ]
+                },
+                suv: {
+                    title: 'Premium SUVs',
+                    description: 'Combine luxury, space, and capability with our range of premium SUVs.',
+                    vehicles: [
+                        {
+                            name: 'Luxury Navigator',
+                            image: 'pictures/premium-suv-1.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?lincoln-suv',
+                            description: 'American luxury with commanding presence.',
+                            price: 'Starting at R1,950,000',
+                            thumbnails: [
+                                'pictures/premium-suv-1-interior.jpg',
+                                'pictures/premium-suv-1-rear.jpg',
+                                'pictures/premium-suv-1-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?lincoln-interior',
+                                'https://source.unsplash.com/random/120x80/?lincoln-rear',
+                                'https://source.unsplash.com/random/120x80/?lincoln-wheel'
+                            ]
+                        },
+                        {
+                            name: 'Sport Cayenne',
+                            image: 'pictures/premium-suv-2.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?porsche-suv',
+                            description: 'Sports car performance in SUV form.',
+                            price: 'Starting at R1,750,000',
+                            thumbnails: [
+                                'pictures/premium-suv-2-interior.jpg',
+                                'pictures/premium-suv-2-rear.jpg',
+                                'pictures/premium-suv-2-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?porsche-suv-interior',
+                                'https://source.unsplash.com/random/120x80/?porsche-suv-rear',
+                                'https://source.unsplash.com/random/120x80/?porsche-suv-wheel'
+                            ]
+                        },
+                        {
+                            name: 'Premium X7',
+                            image: 'pictures/premium-suv-3.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?bmw-suv',
+                            description: 'The ultimate driving machine with space for seven.',
+                            price: 'Starting at R1,950,000',
+                            thumbnails: [
+                                'pictures/premium-suv-3-interior.jpg',
+                                'pictures/premium-suv-3-rear.jpg',
+                                'pictures/premium-suv-3-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?bmw-suv-interior',
+                                'https://source.unsplash.com/random/120x80/?bmw-suv-rear',
+                                'https://source.unsplash.com/random/120x80/?bmw-suv-wheel'
+                            ]
+                        },
+                        {
+                            name: 'Luxury Escalade',
+                            image: 'pictures/premium-suv-4.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?cadillac-suv',
+                            description: 'Bold American luxury with imposing presence.',
+                            price: 'Starting at R2,100,000',
+                            thumbnails: [
+                                'pictures/premium-suv-4-interior.jpg',
+                                'pictures/premium-suv-4-rear.jpg',
+                                'pictures/premium-suv-4-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?cadillac-interior',
+                                'https://source.unsplash.com/random/120x80/?cadillac-rear',
+                                'https://source.unsplash.com/random/120x80/?cadillac-wheel'
+                            ]
+                        }
+                    ]
+                },
+                electric: {
+                    title: 'Electric Vehicles',
+                    description: 'Embrace the future with our cutting-edge electric vehicles combining performance and sustainability.',
+                    vehicles: [
+                        {
+                            name: 'Model S Performance',
+                            image: 'pictures/electric-vehicle-1.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?tesla',
+                            description: 'Revolutionary electric performance with autopilot technology.',
+                            price: 'Starting at R2,200,000',
+                            thumbnails: [
+                                'pictures/electric-vehicle-1-interior.jpg',
+                                'pictures/electric-vehicle-1-rear.jpg',
+                                'pictures/electric-vehicle-1-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?tesla-interior',
+                                'https://source.unsplash.com/random/120x80/?tesla-rear',
+                                'https://source.unsplash.com/random/120x80/?tesla-wheel'
+                            ]
+                        },
+                        {
+                            name: 'Electric EQS',
+                            image: 'pictures/electric-vehicle-2.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?mercedes-electric',
+                            description: 'Luxury electric sedan with exceptional range.',
+                            price: 'Starting at R2,400,000',
+                            thumbnails: [
+                                'pictures/electric-vehicle-2-interior.jpg',
+                                'pictures/electric-vehicle-2-rear.jpg',
+                                'pictures/electric-vehicle-2-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?mercedes-electric-interior',
+                                'https://source.unsplash.com/random/120x80/?mercedes-electric-rear',
+                                'https://source.unsplash.com/random/120x80/?mercedes-electric-wheel'
+                            ]
+                        },
+                        {
+                            name: 'e-tron GT',
+                            image: 'pictures/electric-vehicle-3.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?audi-electric',
+                            description: 'German engineering meets electric performance.',
+                            price: 'Starting at R2,150,000',
+                            thumbnails: [
+                                'pictures/electric-vehicle-3-interior.jpg',
+                                'pictures/electric-vehicle-3-rear.jpg',
+                                'pictures/electric-vehicle-3-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?audi-electric-interior',
+                                'https://source.unsplash.com/random/120x80/?audi-electric-rear',
+                                'https://source.unsplash.com/random/120x80/?audi-electric-wheel'
+                            ]
+                        },
+                        {
+                            name: 'Electric Taycan',
+                            image: 'pictures/electric-vehicle-4.jpg',
+                            fallback: 'https://source.unsplash.com/random/600x400/?porsche-electric',
+                            description: 'Sports car DNA with electric power.',
+                            price: 'Starting at R2,300,000',
+                            thumbnails: [
+                                'pictures/electric-vehicle-4-interior.jpg',
+                                'pictures/electric-vehicle-4-rear.jpg',
+                                'pictures/electric-vehicle-4-wheel.jpg'
+                            ],
+                            thumbnailFallbacks: [
+                                'https://source.unsplash.com/random/120x80/?porsche-electric-interior',
+                                'https://source.unsplash.com/random/120x80/?porsche-electric-rear',
+                                'https://source.unsplash.com/random/120x80/?porsche-electric-wheel'
+                            ]
+                        }
+                    ]
+                }
+            };
+
+            // Open modal when clicking on a gallery item
+            galleryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const category = this.getAttribute('data-category');
+                    const data = vehicleData[category];
+
+                    // Update modal content
+                    modalTitle.textContent = data.title;
+                    modalDescription.textContent = data.description;
+
+                    // Clear previous gallery items
+                    modalGallery.innerHTML = '';
+
+                    // Add new gallery items
+                    data.vehicles.forEach(vehicle => {
+                        const modalItem = document.createElement('div');
+                        modalItem.className = 'modal-item';
+
+                        // Create image container
+                        const imageContainer = document.createElement('div');
+                        imageContainer.className = 'modal-item-image-container loading';
+
+                        // Create main image with immediate fallback
+                        const img = document.createElement('img');
+                        img.className = 'main-image';
+                        img.alt = vehicle.name;
+
+                        // Try to load from local pictures folder first
+                        img.src = vehicle.image;
+
+                        // Add loading and error handling
+                        img.onload = function() {
+                            // Remove loading state when image loads
+                            imageContainer.classList.remove('loading');
+                        };
+
+                        img.onerror = function() {
+                            // If local image fails, try fallback
+                            if (vehicle.fallback) {
+                                this.src = vehicle.fallback;
+                                // Set up a second error handler for the fallback
+                                this.onerror = function() {
+                                    // If even the fallback fails, create a colored div with text
+                                    this.style.display = 'none'; // Hide the img element
+
+                                    // Create a colored background with text
+                                    const placeholderDiv = document.createElement('div');
+                                    placeholderDiv.className = 'placeholder-div';
+                                    placeholderDiv.style.width = '100%';
+                                    placeholderDiv.style.height = '100%';
+                                    placeholderDiv.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16); // Random color
+                                    placeholderDiv.style.display = 'flex';
+                                    placeholderDiv.style.alignItems = 'center';
+                                    placeholderDiv.style.justifyContent = 'center';
+                                    placeholderDiv.style.color = 'white';
+                                    placeholderDiv.style.fontWeight = 'bold';
+                                    placeholderDiv.style.textAlign = 'center';
+                                    placeholderDiv.style.padding = '1rem';
+                                    placeholderDiv.textContent = vehicle.name;
+
+                                    // Add the placeholder to the container
+                                    imageContainer.appendChild(placeholderDiv);
+
+                                    this.onerror = null; // Prevent infinite loop
+                                };
+                            } else {
+                                // No fallback available, create a colored div with text
+                                this.style.display = 'none'; // Hide the img element
+
+                                // Create a colored background with text
+                                const placeholderDiv = document.createElement('div');
+                                placeholderDiv.className = 'placeholder-div';
+                                placeholderDiv.style.width = '100%';
+                                placeholderDiv.style.height = '100%';
+                                placeholderDiv.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16); // Random color
+                                placeholderDiv.style.display = 'flex';
+                                placeholderDiv.style.alignItems = 'center';
+                                placeholderDiv.style.justifyContent = 'center';
+                                placeholderDiv.style.color = 'white';
+                                placeholderDiv.style.fontWeight = 'bold';
+                                placeholderDiv.style.textAlign = 'center';
+                                placeholderDiv.style.padding = '1rem';
+                                placeholderDiv.textContent = vehicle.name;
+
+                                // Add the placeholder to the container
+                                imageContainer.appendChild(placeholderDiv);
+
+                                this.onerror = null; // Prevent infinite loop
+                            }
+                        };
+
+                        // Create caption
+                        const caption = document.createElement('div');
+                        caption.className = 'modal-item-caption';
+                        caption.textContent = vehicle.name;
+
+                        // Add image and caption to image container
+                        imageContainer.appendChild(img);
+                        imageContainer.appendChild(caption);
+
+                        // Create details section
+                        const details = document.createElement('div');
+                        details.className = 'modal-item-details';
+
+                        // Add description if available
+                        if (vehicle.description) {
+                            const description = document.createElement('p');
+                            description.textContent = vehicle.description;
+                            details.appendChild(description);
+                        }
+
+                        // Add price if available
+                        if (vehicle.price) {
+                            const price = document.createElement('p');
+                            price.innerHTML = `<strong>${vehicle.price}</strong>`;
+                            details.appendChild(price);
+                        }
+
+                        // Add thumbnails if available
+                        if (vehicle.thumbnails && vehicle.thumbnails.length > 0) {
+                            const thumbnailsContainer = document.createElement('div');
+                            thumbnailsContainer.className = 'modal-item-thumbnails';
+
+                            // Add each thumbnail
+                            vehicle.thumbnails.forEach((thumbnailSrc, index) => {
+                                const thumbnail = document.createElement('img');
+                                thumbnail.className = 'thumbnail';
+                                thumbnail.alt = `${vehicle.name} detail ${index + 1}`;
+
+                                // Try to load from local pictures folder first
+                                thumbnail.src = thumbnailSrc;
+
+                                // Add loading and error handling
+                                thumbnail.onload = function() {
+                                    // Show thumbnail when loaded
+                                    this.style.opacity = '1';
+                                };
+
+                                thumbnail.onerror = function() {
+                                    // If local image fails, try fallback
+                                    if (vehicle.thumbnailFallbacks && vehicle.thumbnailFallbacks[index]) {
+                                        this.src = vehicle.thumbnailFallbacks[index];
+                                    } else {
+                                        // If no fallback, create a colored div
+                                        const thumbnailContainer = document.createElement('div');
+                                        thumbnailContainer.className = 'thumbnail';
+                                        thumbnailContainer.style.width = '60px';
+                                        thumbnailContainer.style.height = '40px';
+                                        thumbnailContainer.style.backgroundColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+                                        thumbnailContainer.style.borderRadius = '4px';
+                                        thumbnailContainer.style.display = 'flex';
+                                        thumbnailContainer.style.alignItems = 'center';
+                                        thumbnailContainer.style.justifyContent = 'center';
+                                        thumbnailContainer.style.color = 'white';
+                                        thumbnailContainer.style.fontSize = '0.7rem';
+                                        thumbnailContainer.style.fontWeight = 'bold';
+                                        thumbnailContainer.textContent = `Detail ${index + 1}`;
+
+                                        // Replace the thumbnail with the container
+                                        this.parentNode.replaceChild(thumbnailContainer, this);
+
+                                        // Make the container clickable
+                                        thumbnailContainer.style.cursor = 'pointer';
+                                        thumbnailContainer.addEventListener('click', function() {
+                                            // Create a colored div for the main image
+                                            const mainColor = this.style.backgroundColor;
+                                            img.style.display = 'none';
+
+                                            // Check if a placeholder already exists
+                                            let placeholderDiv = imageContainer.querySelector('.placeholder-div');
+                                            if (!placeholderDiv) {
+                                                placeholderDiv = document.createElement('div');
+                                                placeholderDiv.className = 'placeholder-div';
+                                                placeholderDiv.style.width = '100%';
+                                                placeholderDiv.style.height = '100%';
+                                                placeholderDiv.style.display = 'flex';
+                                                placeholderDiv.style.alignItems = 'center';
+                                                placeholderDiv.style.justifyContent = 'center';
+                                                placeholderDiv.style.color = 'white';
+                                                placeholderDiv.style.fontWeight = 'bold';
+                                                placeholderDiv.style.textAlign = 'center';
+                                                placeholderDiv.style.padding = '1rem';
+                                                imageContainer.appendChild(placeholderDiv);
+                                            }
+
+                                            // Update the placeholder
+                                            placeholderDiv.style.backgroundColor = mainColor;
+                                            placeholderDiv.textContent = `${vehicle.name} - Detail ${index + 1}`;
+
+                                            // Highlight the selected thumbnail
+                                            thumbnailsContainer.querySelectorAll('.thumbnail').forEach(thumb => {
+                                                thumb.style.border = '2px solid transparent';
+                                            });
+                                            this.style.border = '2px solid var(--primary-color)';
+                                        });
+                                    }
+                                };
+
+                                // Set initial opacity to 0 for loading effect
+                                thumbnail.style.opacity = '0';
+                                thumbnail.style.transition = 'opacity 0.3s ease';
+
+                                // Make thumbnails clickable to change main image
+                                thumbnail.addEventListener('click', function() {
+                                    // Hide any placeholder that might be showing
+                                    const placeholderDiv = imageContainer.querySelector('.placeholder-div');
+                                    if (placeholderDiv) {
+                                        placeholderDiv.style.display = 'none';
+                                    }
+
+                                    // Show and update main image source
+                                    img.style.display = 'block';
+                                    img.src = this.src;
+
+                                    // Highlight the selected thumbnail
+                                    thumbnailsContainer.querySelectorAll('.thumbnail').forEach(thumb => {
+                                        thumb.style.border = '2px solid transparent';
+                                    });
+                                    this.style.border = '2px solid var(--primary-color)';
+
+                                    // Also update any div thumbnails
+                                    const divThumbnails = thumbnailsContainer.querySelectorAll('div');
+                                    divThumbnails.forEach(div => {
+                                        div.style.border = '2px solid transparent';
+                                    });
+                                });
+
+                                thumbnailsContainer.appendChild(thumbnail);
+                            });
+
+                            details.appendChild(thumbnailsContainer);
+                        }
+
+                        // Add all components to modal item
+                        modalItem.appendChild(imageContainer);
+                        modalItem.appendChild(details);
+
+                        // Add to gallery
+                        modalGallery.appendChild(modalItem);
+                    });
+
+                    // Show modal
+                    modal.classList.add('show');
+                    document.body.style.overflow = 'hidden'; // Prevent scrolling
+                });
+            });
+
+            // Close modal when clicking the close button
+            closeBtn.addEventListener('click', function() {
+                modal.classList.remove('show');
+                document.body.style.overflow = ''; // Restore scrolling
+            });
+
+            // Close modal when clicking outside the modal content
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.classList.remove('show');
+                    document.body.style.overflow = ''; // Restore scrolling
+                }
+            });
+
+            // Contact button redirects to contact page
+            contactBtn.addEventListener('click', function() {
+                window.location.href = 'contact.html';
+            });
+        });
+    </script>
+</body>
+</html>
